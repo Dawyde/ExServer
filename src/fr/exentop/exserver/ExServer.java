@@ -10,7 +10,7 @@ import fr.exentop.exserver.requesthandlers.ExRequestHandler;
 
 public class ExServer implements Runnable{
 
-	public static final String SERVER_NAME = "ExServer";
+	public static final String SERVER_NAME = "Exentop Server";
 	protected ServerSocket mServer;
 	protected Thread mThread;
 	protected boolean mRunning;

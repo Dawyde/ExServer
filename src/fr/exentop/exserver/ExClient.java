@@ -172,7 +172,6 @@ public class ExClient implements Runnable{
 				clear();
 				headers();
 				i++;
-				System.out.println("Requête "+i+" => "+mUri);
 				mServer.getRequestHandler().handleRequest(this);
 				
 			}
@@ -190,6 +189,10 @@ public class ExClient implements Runnable{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public String getURI() {
+		return mUri;
 	}
 
 }

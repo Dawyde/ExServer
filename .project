@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
+<<<<<<< HEAD
 	<name>ExentopWebServer</name>
+=======
+	<name>ExServer</name>
+>>>>>>> bdc0d1dae3050f3f259dbd22e414ecdce5cc45fd
 	<comment></comment>
 	<projects>
 	</projects>
