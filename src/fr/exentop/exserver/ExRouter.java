@@ -2,16 +2,22 @@ package fr.exentop.exserver;
 
 import java.util.ArrayList;
 
+import fr.exentop.exserver.actions.ExAction;
+import fr.exentop.exserver.exceptions.ExConnectionClosed;
+import fr.exentop.exserver.requests.HTTPRequest;
+
 public class ExRouter {
 	
 	private class Entry{
 		
 		private String[] mPath;
 		private int mParameters = 0;
+		private ExAction mAction;
 		
-		public Entry(String route){
+		public Entry(String route, ExAction action){
 			//On traite la route pour qu'elle soit traitée plus vite au moment du match
 			String str = "";
+			mAction = action;
 			ArrayList<String> path = new ArrayList<String>();
 			for(int i=0;i<route.length();i++){
 				char c = route.charAt(i);
@@ -28,10 +34,10 @@ public class ExRouter {
 			mPath = new String[path.size()];
 			for(int i=0;i<path.size();i++) mPath[i] = path.get(i);
 			
-			
+		
 		}
 		
-		public void match(String route){
+		public boolean match(HTTPRequest request, String route) throws ExConnectionClosed{
 			int path = 0;
 			int parameters = 0;
 			int mode = 0;
@@ -40,7 +46,7 @@ public class ExRouter {
 			int j=0;
 			boolean match = true;
 			boolean endpath = false;
-			String[] values = new String[mParameters];
+			String[] values = null;
 			for(int i=0;i<route.length();i++){
 				char c = route.charAt(i);
 				//if(mode == 0 && 
@@ -63,12 +69,13 @@ public class ExRouter {
 						j++;
 						if(j >= mPath[path].length()){
 							if(parameters >= mParameters){
-								endpath = true;
+								endpath = i==route.length()-1;
 								break;
 							}
 							path++;
 							j=0;
 							mode = 1;
+							if(parameters == 0) values = new String[mParameters];
 							if(path >= mPath.length){
 								values[parameters] = route.substring(i+1);
 								endpath = true;
@@ -90,23 +97,25 @@ public class ExRouter {
 				}
 			}
 			if(!endpath) match = false;
-			System.out.println("Match : "+match);
 			if(match){
-				for(String p : values) System.out.println(p);
+				mAction.runAction(request, values);
+				return true;
 			}
+			else return false;
 		}
 		
 	}
 	
 	ArrayList<Entry> mRoutes = new ArrayList<Entry>();
 	
-	public void addRoute(String route){
-		mRoutes.add(new Entry(route));	
+	public void addRoute(String route, ExAction action){
+		mRoutes.add(new Entry(route, action));	
 	}
 	
-	public void match(String value){
+	public boolean handleRequest(HTTPRequest request) throws ExConnectionClosed{
 		for(Entry e : mRoutes){
-			e.match(value);
+			if(e.match(request, request.getURI())) return true;
 		}
+		return false;
 	}
 }

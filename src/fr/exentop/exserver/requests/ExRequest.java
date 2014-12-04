@@ -2,6 +2,7 @@ package fr.exentop.exserver.requests;
 
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -10,22 +11,28 @@ import java.util.TreeMap;
 import fr.exentop.exserver.ExClient;
 import fr.exentop.exserver.ExServer;
 import fr.exentop.exserver.exceptions.ExConnectionClosed;
+import fr.exentop.exserver.requesthandlers.ExRequestHandler;
 
 public abstract class ExRequest {
 	
-	public static final int HTTP_OK = 302;
+	public static final int HTTP_OK = 200;
+	public static final int HTTP_NOT_FOUND = 404;
+	public static final int HTTP_NOT_MODIFIED = 304;
 	
-	public static final int BUFFER_LEN = 256;
+	public static final int BUFFER_LEN = 1024;
 	public final static SimpleDateFormat sDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
+
+	protected ExRequestHandler mHandler;
 	
 	
 	protected ExClient mClient;
 	protected TreeMap<String, String> mHeaders;
-	protected int mCode = 302;
+	protected int mCode = 200;
 	
 	private boolean mHeadersSent = false;
 	
-	public ExRequest(ExClient client){
+	public ExRequest(ExRequestHandler handler, ExClient client){
+		mHandler = handler;
 		mClient = client;
 		mHeaders = new TreeMap<String, String>();
 		
@@ -36,13 +43,26 @@ public abstract class ExRequest {
 		
 		
 	}
+	public ExRequestHandler getRequestHandler(){
+		return mHandler;
+	}
+	public void setCode(int code){
+		mCode = code;
+	}
 	protected String getMessage(int type){
 		switch(type){
 		case HTTP_OK:
 			return "OK";
+		case HTTP_NOT_FOUND:
+			return "Not Found";
 		}
 		return "OK";
 	}
+
+	public String getURI() {
+		return mClient.getURI();
+	}
+
 	
 	public void sendHeaders() throws ExConnectionClosed{
 		if(mHeadersSent) return;
@@ -73,6 +93,9 @@ public abstract class ExRequest {
 	public void sendTextResponse(String text) throws ExConnectionClosed{
 		byte[] datas = text.getBytes();
 		mHeaders.put("Content-Length", String.valueOf(datas.length));
+		Calendar c = Calendar.getInstance(); 
+		c.add(Calendar.DATE, 1);
+		mHeaders.put("Expires", sDateFormat.format(c.getTime()));
 		if(!mHeaders.containsKey("Content-Type")) mHeaders.put("Content-Type", "text/html");
 		//On envoie le headers
 		sendHeaders();
