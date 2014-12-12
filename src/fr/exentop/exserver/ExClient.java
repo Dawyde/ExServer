@@ -26,12 +26,15 @@ public class ExClient implements Runnable{
 	protected ExBag mQuery;
 	protected ExBag mPost = null;
 	
+	protected boolean mSSL;
+	
 
 
-	public ExClient(ExServer server, Socket s){
+	public ExClient(ExServer server, Socket s, boolean ssl){
 		try {
 			mServer = server;
 			mSocket = s;
+			mSSL = ssl;
 			mInput = new BufferedInputStream(s.getInputStream());
 			mOutputStream = s.getOutputStream();
 			mThread = new Thread(this);
@@ -63,6 +66,9 @@ public class ExClient implements Runnable{
 	}
 	public ExBag getPost(){
 		return mPost;
+	}
+	public boolean isSSL(){
+		return mSSL;
 	}
 	
 	public String readLine() throws IOException, ExConnectionClosed{
@@ -167,16 +173,13 @@ public class ExClient implements Runnable{
 	public void run() {
 		try {
 			//On valide la connexion
-			int i = 0;
 			while(true){
 				clear();
 				headers();
-				i++;
 				mServer.getRequestHandler().handleRequest(this);
-				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		finally{
 			try{

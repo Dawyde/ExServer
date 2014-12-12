@@ -8,7 +8,6 @@ import fr.exentop.exserver.actions.ExAction;
 import fr.exentop.exserver.actions.ExResourceAction;
 import fr.exentop.exserver.exceptions.ExConnectionClosed;
 import fr.exentop.exserver.requesthandlers.DefaultExRequestHandler;
-import fr.exentop.exserver.requesthandlers.ExRequestHandler;
 import fr.exentop.exserver.requests.HTTPRequest;
 import fr.exentop.exserver.templates.ExTemplate;
 
@@ -20,7 +19,9 @@ public class Test {
 	public static void main(String[] args) {
 		
 		
-		ExServer server = new ExServer(81);
+		ExServer server = new ExServer();
+		server.setHttpEnable(true);
+		server.setHttpsEnable(true);
 		server.start();
 		DefaultExRequestHandler d = (DefaultExRequestHandler) server.getRequestHandler();
 		d.getRouter().addRoute("/images/*", new ExResourceAction("resources/images"));
@@ -38,7 +39,7 @@ public class Test {
 			@Override
 			public void runAction(HTTPRequest request, String[] parameters) throws ExConnectionClosed {
 				try {
-					request.sendTextResponse("Salut <b>"+URLDecoder.decode(parameters[0], "UTF8")+"</b> !");
+					request.sendTextResponse("Salut <b>"+URLDecoder.decode(parameters[0], "UTF8")+"</b> "+(request.isSSL()?"HTTPS":"HTTP")+" !");
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -53,7 +54,8 @@ public class Test {
 			}
 		});
 		try {
-			server.getThread().join();
+			System.out.println("Test");
+			server.getHttpServer().getThread().join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

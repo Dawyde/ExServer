@@ -3,7 +3,6 @@ package fr.exentop.exserver.requests;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Date;
 
 import fr.exentop.exserver.ExClient;
@@ -22,6 +21,8 @@ public class HTTPRequest extends ExRequest {
 		String[] s = f.getName().split("\\.");
 		if(s.length <= 1) return "octet/stream";
 		String ext = s[s.length-1].toLowerCase();
+		if(ext.equals("html")) return "text/html";
+		if(ext.equals("js")) return "application/javascript";
 		if(ext.equals("png")) return "image/png";
 		else if(ext.equals("gif")) return "image/gif";
 		return "octet/stream";
@@ -31,7 +32,7 @@ public class HTTPRequest extends ExRequest {
 		try {
 			Date last_modified = new Date(file.lastModified()/1000*1000);
 			//last_modified.
-			//On vérifie si on doit vraiment renvoyer l'image
+			//On vÃ©rifie si on doit vraiment renvoyer l'image
 			if(mClient.getHeaders().has("if-modified-since")){
 				try{
 					Date d = sDateFormat.parse(mClient.getHeaders().get("if-modified-since"));
@@ -65,20 +66,6 @@ public class HTTPRequest extends ExRequest {
 				output.flush();
 				len -= read;
 			}
-			
-			
-			
-			/*try{
-				while(len > 0){
-					output.write(datas, offset, len > BUFFER_LEN ? BUFFER_LEN : len);
-					offset += BUFFER_LEN;
-					len -= BUFFER_LEN;
-					output.flush();
-				}
-			}
-			catch(Exception e){
-				throw new ExConnectionClosed();
-			}*/
 		
 		} catch (Exception e) {
 			e.printStackTrace();

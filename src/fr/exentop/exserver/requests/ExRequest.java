@@ -49,12 +49,17 @@ public abstract class ExRequest {
 	public void setCode(int code){
 		mCode = code;
 	}
+	public boolean isSSL(){
+		return mClient.isSSL();
+	}
 	protected String getMessage(int type){
 		switch(type){
 		case HTTP_OK:
 			return "OK";
 		case HTTP_NOT_FOUND:
 			return "Not Found";
+		case HTTP_NOT_MODIFIED:
+			return "Not Modified";
 		}
 		return "OK";
 	}
@@ -72,7 +77,6 @@ public abstract class ExRequest {
 		for(Entry<String, String> entry : mHeaders.entrySet()){
 			sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
 		}
-		//TODO SetCookie
 		sb.append("\r\n");
 		
 		//On envoie les headers
