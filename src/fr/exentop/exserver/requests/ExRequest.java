@@ -18,6 +18,7 @@ public abstract class ExRequest {
 	public static final int HTTP_OK = 200;
 	public static final int HTTP_NOT_FOUND = 404;
 	public static final int HTTP_NOT_MODIFIED = 304;
+	public static final int HTTP_SWITCHING_PROTOCOLS = 101;
 	
 	public static final int BUFFER_LEN = 1024;
 	public final static SimpleDateFormat sDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
@@ -60,6 +61,8 @@ public abstract class ExRequest {
 			return "Not Found";
 		case HTTP_NOT_MODIFIED:
 			return "Not Modified";
+		case HTTP_SWITCHING_PROTOCOLS:
+			return "Switching Protocols";
 		}
 		return "OK";
 	}

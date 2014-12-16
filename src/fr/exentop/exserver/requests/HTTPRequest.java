@@ -22,9 +22,10 @@ public class HTTPRequest extends ExRequest {
 		if(s.length <= 1) return "octet/stream";
 		String ext = s[s.length-1].toLowerCase();
 		if(ext.equals("html")) return "text/html";
-		if(ext.equals("js")) return "application/javascript";
-		if(ext.equals("png")) return "image/png";
+		else if(ext.equals("js")) return "application/javascript";
+		else if(ext.equals("png")) return "image/png";
 		else if(ext.equals("gif")) return "image/gif";
+		else if(ext.equals("mp3")) return "audio/mpeg";
 		return "octet/stream";
 	}
 	
@@ -66,11 +67,13 @@ public class HTTPRequest extends ExRequest {
 				output.flush();
 				len -= read;
 			}
-		
+			input.close();
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 			throw new ExConnectionClosed();
 		}
+		
 	}
 
 }
