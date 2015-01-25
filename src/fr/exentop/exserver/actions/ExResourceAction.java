@@ -11,37 +11,38 @@ import fr.exentop.exserver.requests.HTTPRequest;
 public class ExResourceAction implements ExAction {
 
 	private String mDirectory;
-	public ExResourceAction(String directory){
+
+	public ExResourceAction(String directory) {
 		mDirectory = directory;
 	}
-	
+
 	@Override
-	public void runAction(HTTPRequest request, String[] parameters)
-			throws ExConnectionClosed {
+	public void runAction(HTTPRequest request, String[] parameters) throws ExConnectionClosed {
 		String path = "";
 		try {
-			path = URLDecoder.decode(parameters[0],"UTF8");
-		} catch (UnsupportedEncodingException e) {
+			path = URLDecoder.decode(parameters[0], "UTF8");
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		char c;
 		int ptc = 0;
 		boolean valid = true;
-		//On vérifie que le chemin est valide
-		for(int i=0;i<path.length();i++){
+		// On vérifie que le chemin est valide
+		for (int i = 0; i < path.length(); i++) {
 			c = path.charAt(i);
-			if(c == '.'){
+			if (c == '.') {
 				ptc++;
-				if(ptc >= 2) valid = false;
+				if (ptc >= 2) valid = false;
 			}
 			else ptc = 0;
 		}
-		if(!valid){
+		if (!valid) {
 			request.setCode(ExRequest.HTTP_NOT_FOUND);
 			request.sendTextResponse("Page Introuvable");
 		}
-		File file = new File(mDirectory+"/"+path);
-		if(!file.exists()){
+		File file = new File(mDirectory + "/" + path);
+		if (!file.exists()) {
 			request.setCode(ExRequest.HTTP_NOT_FOUND);
 			request.sendTextResponse("Page Introuvable");
 		}

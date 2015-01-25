@@ -17,8 +17,8 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		
+		ExServer.KEYSTORE_PATH = "mySrvKeystore";
+		ExServer.KEYSTORE_PASSWORD = "maclio";
 		ExServer server = new ExServer();
 		server.setHttpEnable(true);
 		server.setHttpsEnable(true);
@@ -32,15 +32,24 @@ public class Test {
 				DefaultExRequestHandler handler = (DefaultExRequestHandler) request.getRequestHandler();
 				ExTemplate t = new ExTemplate("template.tpl");
 				t.set("prenom", "John");
+
 				handler.render(t, request);
+			}
+		});
+		d.getRouter().addRoute("/bou", new ExAction() {
+			@Override
+			public void runAction(HTTPRequest request, String[] parameters) throws ExConnectionClosed {
+				request.redirect("/");
 			}
 		});
 		d.getRouter().addRoute("/user/*", new ExAction() {
 			@Override
 			public void runAction(HTTPRequest request, String[] parameters) throws ExConnectionClosed {
 				try {
-					request.sendTextResponse("Salut <b>"+URLDecoder.decode(parameters[0], "UTF8")+"</b> "+(request.isSSL()?"HTTPS":"HTTP")+" !");
-				} catch (UnsupportedEncodingException e) {
+					request.sendTextResponse("Salut <b>" + URLDecoder.decode(parameters[0], "UTF8") + "</b> "
+							+ (request.isSSL() ? "HTTPS" : "HTTP") + " !");
+				}
+				catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -56,7 +65,8 @@ public class Test {
 		try {
 			System.out.println("Test");
 			server.getHttpServer().getThread().join();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
