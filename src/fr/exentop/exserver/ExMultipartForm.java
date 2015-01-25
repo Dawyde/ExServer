@@ -154,6 +154,10 @@ public class ExMultipartForm {
 			return mName;
 		}
 
+		public String get(String key) {
+			return mDatas.get(key);
+		}
+
 		public boolean isFile() {
 			return mDatas.containsKey("filename");
 		}
