@@ -196,7 +196,6 @@ public class ExClient implements Runnable {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 		}
 		finally {
 			try {
